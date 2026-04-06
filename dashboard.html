@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Progress Dashboard — DataPath SRMU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    .page-wrap { padding: 90px 0 60px; }
+    .dash-header {
+      padding: 40px 60px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .dash-title { font-size: 28px; font-weight: 800; color: var(--text); }
+    .dash-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .dash-body { padding: 40px 60px; display: grid; grid-template-columns: 340px 1fr; gap: 28px; align-items: start; }
+
+    /* INPUT PANEL */
+    .input-panel { display: flex; flex-direction: column; gap: 20px; }
+    .panel-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .mark-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .mark-input-wrap { position: relative; }
+    .mark-input-wrap .max-hint { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: 10px; color: var(--muted); pointer-events: none; }
+    .lab-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .lab-item label { font-size: 10px; }
+    .lab-item input { text-align: center; padding: 8px; }
+
+    /* DASHBOARD AREA */
+    .dash-area { display: flex; flex-direction: column; gap: 24px; }
+
+    /* SCORE CARDS */
+    .score-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .score-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 22px;
+      position: relative; overflow: hidden;
+    }
+    .score-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    }
+    .score-card.blue::before { background: linear-gradient(90deg, var(--accent), #7dd3fc); }
+    .score-card.green::before { background: linear-gradient(90deg, var(--green), #6ee7b7); }
+    .score-card.yellow::before { background: linear-gradient(90deg, var(--yellow), #fde68a); }
+    .score-card.purple::before { background: linear-gradient(90deg, var(--accent2), #c7d2fe); }
+    .score-card.red::before { background: linear-gradient(90deg, var(--red), #fca5a5); }
+    .score-card.teal::before { background: linear-gradient(90deg, #2dd4bf, #99f6e4); }
+    .score-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .score-val { font-size: 32px; font-weight: 800; color: var(--text); }
+    .score-max { font-size: 14px; color: var(--muted); font-weight: 400; }
+    .score-pct { font-family: var(--mono); font-size: 11px; margin-top: 6px; }
+
+    /* CGPA PREDICTION CARD */
+    .cgpa-card {
+      background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(129,140,248,0.08));
+      border: 1px solid rgba(56,189,248,0.25);
+      border-radius: 16px; padding: 28px;
+    }
+    .cgpa-main { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .cgpa-circle {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 3px solid var(--accent);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(56,189,248,0.05); flex-shrink: 0;
+    }
+    .cgpa-num { font-size: 36px; font-weight: 800; color: var(--accent); line-height: 1; }
+    .cgpa-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
+    .cgpa-info { flex: 1; }
+    .cgpa-grade { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .cgpa-msg { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .focus-subjects { margin-top: 16px; }
+    .focus-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .focus-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 12px; }
+    .focus-name { font-size: 13px; color: var(--text); flex: 1; min-width: 100px; }
+    .focus-bar-wrap { flex: 2; }
+    .focus-pct { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 38px; text-align: right; }
+
+    /* CHARTS */
+    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+    .chart-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+    .chart-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* STUDENT LIST */
+    .student-list-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+    .slist-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+
+    /* EMPTY STATE */
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+
+    @media(max-width:900px) {
+      .dash-header { padding: 30px 20px 20px; }
+      .dash-body { padding: 20px; grid-template-columns: 1fr; }
+      .score-cards { grid-template-columns: repeat(2,1fr); }
+      .charts-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">📊 DataPath<span>SRMU</span></a>
+    <div class="nav-links">
+      <a href="portfolio.html">Portfolio</a>
+      <a href="interview.html">Interview</a>
+      <a href="toolbox.html">Toolbox</a>
+      <a href="dashboard.html" class="active nav-highlight">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">📈 Student Progress Dashboard</div>
+      <div class="dash-sub">SRMU Lucknow — DIT / Mid-Term / Lab Progress & CGPA Prediction</div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button class="btn btn-outline" onclick="importData()">📂 Import JSON</button>
+      <button class="btn btn-outline" onclick="Storage.exportJSON()">💾 Export JSON</button>
+      <button class="btn btn-primary" onclick="openAddModal()">➕ Add Student</button>
+      <input type="file" id="importInput" accept=".json" style="display:none" onchange="handleImport(this)"/>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <!-- INPUT PANEL -->
+    <div class="input-panel">
+      <div class="card">
+        <div class="panel-title">🎓 Add / Edit Student</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label>Full Name</label>
+            <input type="text" id="inp_name" placeholder="e.g. Prateek Singh"/>
+          </div>
+          <div>
+            <label>Roll Number</label>
+            <input type="text" id="inp_roll" placeholder="e.g. 202410101360128"/>
+          </div>
+          <div class="mark-row">
+            <div>
+              <label>Branch</label>
+              <select id="inp_branch">
+                <option>BCA</option><option>B.Tech</option><option>MCA</option><option>M.Tech</option>
+              </select>
+            </div>
+            <div>
+              <label>Semester</label>
+              <select id="inp_sem">
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panel-title">📝 Theory Marks</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="mark-row">
+            <div class="mark-input-wrap">
+              <label>DIT 1 <span style="color:var(--accent)">(Max 20)</span></label>
+              <input type="number" id="inp_dit1" min="0" max="20" placeholder="0–20" oninput="updateDashboard()"/>
+            </div>
+            <div class="mark-input-wrap">
+              <label>Mid Term <span style="color:var(--accent)">(Max 30)</span></label>
+              <input type="number" id="inp_mid" min="0" max="30" placeholder="0–30" oninput="updateDashboard()"/>
+            </div>
+          </div>
+          <div class="mark-row">
+            <div>
+              <label>DIT 2 <span style="color:var(--accent)">(Max 20)</span></label>
+              <input type="number" id="inp_dit2" min="0" max="20" placeholder="0–20" oninput="updateDashboard()"/>
+            </div>
+            <div>
+              <label>Innovative DIT <span style="color:var(--accent)">(Max 10)</span></label>
+              <input type="number" id="inp_idit" min="0" max="10" placeholder="0–10" oninput="updateDashboard()"/>
+            </div>
+          </div>
+          <div class="mark-row">
+            <div>
+              <label>TA 1 <span style="color:var(--accent)">(Max 10)</span></label>
+              <input type="number" id="inp_ta1" min="0" max="10" placeholder="0–10" oninput="updateDashboard()"/>
+            </div>
+            <div>
+              <label>TA 2 <span style="color:var(--accent)">(Max 10)</span></label>
+              <input type="number" id="inp_ta2" min="0" max="10" placeholder="0–10" oninput="updateDashboard()"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panel-title">🧪 Lab Marks (Lab 0 – Lab 10)</div>
+        <div class="lab-grid" id="labGrid"></div>
+        <div style="margin-top:12px;font-size:11px;color:var(--muted)">Each lab max: 10 marks</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="btn btn-primary" style="width:100%" onclick="saveStudent()">💾 Save to Dashboard</button>
+        <button class="btn btn-outline" style="width:100%" onclick="clearForm()">🗑 Clear Form</button>
+      </div>
+    </div>
+
+    <!-- DASHBOARD AREA -->
+    <div class="dash-area" id="dashArea">
+      <!-- Score Cards -->
+      <div class="score-cards" id="scoreCards">
+        <div class="score-card blue">
+          <div class="score-label">DIT 1</div>
+          <div class="score-val" id="sc_dit1">—<span class="score-max">/20</span></div>
+          <div class="score-pct" id="sc_dit1_pct" style="color:var(--muted)">Enter marks</div>
+          <div class="progress-wrap" style="margin-top:10px"><div class="progress-bar blue" id="pb_dit1" style="width:0%"></div></div>
+        </div>
+        <div class="score-card green">
+          <div class="score-label">Mid Term</div>
+          <div class="score-val" id="sc_mid">—<span class="score-max">/30</span></div>
+          <div class="score-pct" id="sc_mid_pct" style="color:var(--muted)">Enter marks</div>
+          <div class="progress-wrap" style="margin-top:10px"><div class="progress-bar green" id="pb_mid" style="width:0%"></div></div>
+        </div>
+        <div class="score-card yellow">
+          <div class="score-label">DIT 2</div>
+          <div class="score-val" id="sc_dit2">—<span class="score-max">/20</span></div>
+          <div class="score-pct" id="sc_dit2_pct" style="color:var(--muted)">Enter marks</div>
+          <div class="progress-wrap" style="margin-top:10px"><div class="progress-bar yellow" id="pb_dit2" style="width:0%"></div></div>
+        </div>
+        <div class="score-card purple">
+          <div class="score-label">Innovative DIT</div>
+          <div class="score-val" id="sc_idit">—<span class="score-max">/10</span></div>
+          <div class="score-pct" id="sc_idit_pct" style="color:var(--muted)">Enter marks</div>
+          <div class="progress-wrap" style="margin-top:10px"><div class="progress-bar" id="pb_idit" style="width:0%;background:var(--accent2)"></div></div>
+        </div>
+        <div class="score-card teal">
+          <div class="score-label">TA 1 + TA 2</div>
+          <div class="score-val" id="sc_ta">—<span class="score-max">/20</span></div>
+          <div class="score-pct" id="sc_ta_pct" style="color:var(--muted)">Enter marks</div>
+          <div class="progress-wrap" style="margin-top:10px"><div class="progress-bar" id="pb_ta" style="width:0%;background:#2dd4bf"></div></div>
+        </div>
+        <div class="score-card red">
+          <div class="score-label">Lab Average</div>
+          <div class="score-val" id="sc_lab">—<span class="score-max">/10</span></div>
+          <div class="score-pct" id="sc_lab_pct" style="color:var(--muted)">Enter labs</div>
+          <div class="progress-wrap" style="margin-top:10px"><div class="progress-bar red" id="pb_lab" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- CGPA Prediction -->
+      <div class="cgpa-card" id="cgpaCard">
+        <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px">📊 CGPA Prediction & Focus Areas</div>
+        <div class="cgpa-main">
+          <div class="cgpa-circle">
+            <div class="cgpa-num" id="cgpaNum">—</div>
+            <div class="cgpa-label">Predicted</div>
+          </div>
+          <div class="cgpa-info">
+            <div class="cgpa-grade" id="cgpaGrade">Enter your marks →</div>
+            <div class="cgpa-msg" id="cgpaMsg">Fill in all your marks on the left panel to see your predicted CGPA and personalized recommendations.</div>
+          </div>
+        </div>
+        <div class="focus-subjects" id="focusSubjects" style="display:none">
+          <div class="focus-title">📌 Subjects to Focus On</div>
+          <div id="focusList"></div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">📊 Marks Overview</div>
+          <div class="chart-sub">Your marks vs. maximum possible</div>
+          <canvas id="marksChart" height="220"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🧪 Lab Progress (Lab 0–10)</div>
+          <div class="chart-sub">Performance across all lab sessions</div>
+          <canvas id="labChart" height="220"></canvas>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">🎯 Score Percentage by Component</div>
+          <div class="chart-sub">Radar view of your academic performance</div>
+          <canvas id="radarChart" height="240"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">📈 CGPA Prediction Scenarios</div>
+          <div class="chart-sub">If you improve weak areas — possible outcomes</div>
+          <canvas id="cgpaScenarioChart" height="240"></canvas>
+        </div>
+      </div>
+
+      <!-- Student List -->
+      <div class="student-list-card">
+        <div class="slist-header">
+          <div style="font-size:15px;font-weight:700;color:var(--text)">👥 All Students</div>
+          <div style="display:flex;gap:10px">
+            <input type="text" placeholder="Search by name or roll..." style="width:220px;padding:8px 14px" oninput="filterStudents(this.value)"/>
+          </div>
+        </div>
+        <div id="studentTableWrap">
+          <div class="empty-state">
+            <div class="empty-icon">🎓</div>
+            <div class="empty-title">No students added yet</div>
+            <div>Fill the form and click "Save to Dashboard"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="padding:20px 60px;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center">
+  Made by Prateek Singh · Roll: 202410101360128 · 📞 9044298094 · thakurprateeksinghsuryavanshi@gmail.com
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+// Chart instances
+let marksChartInst, labChartInst, radarChartInst, cgpaScenarioInst;
+
+// Build lab grid
+function buildLabGrid() {
+  const grid = document.getElementById('labGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i <= 10; i++) {
+    grid.innerHTML += `<div class="lab-item">
+      <label>Lab ${i}</label>
+      <input type="number" id="inp_lab${i}" min="0" max="10" placeholder="0–10" oninput="updateDashboard()"/>
+    </div>`;
+  }
+}
+buildLabGrid();
+
+function getFormData() {
+  const d = (id) => parseFloat(document.getElementById(id)?.value) || 0;
+  const labs = Array.from({length:11}, (_, i) => d(`inp_lab${i}`));
+  return {
+    name: document.getElementById('inp_name').value,
+    roll: document.getElementById('inp_roll').value,
+    branch: document.getElementById('inp_branch').value,
+    semester: parseInt(document.getElementById('inp_sem').value),
+    marks: {
+      DIT1: d('inp_dit1'), MidTerm: d('inp_mid'), DIT2: d('inp_dit2'),
+      InnovativeDIT: d('inp_idit'), TA1: d('inp_ta1'), TA2: d('inp_ta2'),
+      labs
+    }
+  };
+}
+
+function updateDashboard() {
+  const data = getFormData();
+  const m = data.marks;
+
+  // Score cards
+  function setCard(id, val, max, colorClass) {
+    const el = document.getElementById(`sc_${id}`);
+    const pct = Math.round((val/max)*100);
+    if(el) el.innerHTML = `${val || '—'}<span class="score-max">/${max}</span>`;
+    const pctEl = document.getElementById(`sc_${id}_pct`);
+    if(pctEl) { pctEl.textContent = val ? `${pct}%` : 'Enter marks'; pctEl.style.color = pct>=75?'var(--green)':pct>=50?'var(--yellow)':'var(--red)'; }
+    const pb = document.getElementById(`pb_${id}`);
+    if(pb) pb.style.width = `${(val/max)*100}%`;
+  }
+
+  setCard('dit1', m.DIT1, 20, 'blue');
+  setCard('mid', m.MidTerm, 30, 'green');
+  setCard('dit2', m.DIT2, 20, 'yellow');
+  setCard('idit', m.InnovativeDIT, 10, 'purple');
+
+  const ta = m.TA1 + m.TA2;
+  const taEl = document.getElementById('sc_ta');
+  if(taEl) taEl.innerHTML = `${ta||'—'}<span class="score-max">/20</span>`;
+  const taPct = Math.round((ta/20)*100);
+  const taPctEl = document.getElementById('sc_ta_pct');
+  if(taPctEl) { taPctEl.textContent = ta ? `${taPct}%` : 'Enter marks'; taPctEl.style.color = taPct>=75?'var(--green)':taPct>=50?'var(--yellow)':'var(--red)'; }
+  const pbTa = document.getElementById('pb_ta');
+  if(pbTa) pbTa.style.width = `${(ta/20)*100}%`;
+
+  const labSum = m.labs.reduce((a,b)=>a+b,0);
+  const labFilled = m.labs.filter(v=>v>0).length;
+  const labAvg = labFilled > 0 ? (labSum/labFilled).toFixed(1) : 0;
+  const labEl = document.getElementById('sc_lab');
+  if(labEl) labEl.innerHTML = `${labAvg||'—'}<span class="score-max">/10</span>`;
+  const labPct = Math.round((labAvg/10)*100);
+  const labPctEl = document.getElementById('sc_lab_pct');
+  if(labPctEl) { labPctEl.textContent = labAvg ? `${labPct}%` : 'Enter labs'; labPctEl.style.color = labPct>=75?'var(--green)':labPct>=50?'var(--yellow)':'var(--red)'; }
+  const pbLab = document.getElementById('pb_lab');
+  if(pbLab) pbLab.style.width = `${labPct}%`;
+
+  // Total & CGPA prediction
+  const total = m.DIT1 + m.MidTerm + m.DIT2 + m.InnovativeDIT + m.TA1 + m.TA2;
+  const maxTotal = 100;
+  const pctTotal = (total / maxTotal) * 100;
+  const labPctVal = (labAvg / 10) * 100;
+  const combinedPct = (pctTotal * 0.7 + labPctVal * 0.3);
+  const cgpa = Math.min(10, ((combinedPct / 100) * 10)).toFixed(2);
+
+  document.getElementById('cgpaNum').textContent = total > 0 ? cgpa : '—';
+
+  // Grade and message
+  let grade = '', msg = '', color = 'var(--accent)';
+  if (!total) { document.getElementById('cgpaGrade').textContent = 'Enter your marks →'; document.getElementById('cgpaMsg').textContent = 'Fill in all your marks on the left panel to see your predicted CGPA and personalized recommendations.'; }
+  else if (cgpa >= 9) { grade='O — Outstanding 🏆'; msg='Exceptional performance! You are on track for a top placement. Keep maintaining this standard.'; color='var(--green)'; }
+  else if (cgpa >= 8) { grade='A+ — Excellent ⭐'; msg='Great work! You have a strong academic profile. Focus on a few weak areas to push to Outstanding.'; color='var(--green)'; }
+  else if (cgpa >= 7) { grade='A — Very Good 👍'; msg='Good performance overall. With targeted effort on weak subjects, you can secure A+ easily.'; color='var(--accent)'; }
+  else if (cgpa >= 6) { grade='B+ — Above Average'; msg='Decent performance. Significant improvement needed in theory components to boost your CGPA.'; color='var(--yellow)'; }
+  else if (cgpa >= 5) { grade='B — Average'; msg='You need to work harder. Focus heavily on Mid-Term preparation and lab practice.'; color='var(--yellow)'; }
+  else { grade='C — Needs Improvement ⚠️'; msg='Urgent attention needed. Talk to your faculty and create a structured study plan immediately.'; color='var(--red)'; }
+
+  document.getElementById('cgpaGrade').textContent = grade;
+  document.getElementById('cgpaGrade').style.color = color;
+  document.getElementById('cgpaMsg').textContent = msg;
+  document.getElementById('cgpaNum').style.color = color;
+
+  // Focus subjects
+  const components = [
+    { name:'DIT 1', pct:(m.DIT1/20)*100 }, { name:'Mid-Term', pct:(m.MidTerm/30)*100 },
+    { name:'DIT 2', pct:(m.DIT2/20)*100 }, { name:'Innovative DIT', pct:(m.InnovativeDIT/10)*100 },
+    { name:'TA 1', pct:(m.TA1/10)*100 }, { name:'TA 2', pct:(m.TA2/10)*100 },
+    { name:'Lab Sessions', pct:labPctVal }
+  ].filter(c => c.pct > 0).sort((a,b) => a.pct - b.pct);
+
+  if (components.length > 0) {
+    document.getElementById('focusSubjects').style.display = 'block';
+    const list = document.getElementById('focusList');
+    list.innerHTML = components.slice(0, 5).map(c => {
+      const col = c.pct >= 75 ? 'green' : c.pct >= 50 ? 'yellow' : 'red';
+      return `<div class="focus-item">
+        <div class="focus-name">${c.name}</div>
+        <div class="focus-bar-wrap"><div class="progress-wrap"><div class="progress-bar ${col}" style="width:${c.pct}%"></div></div></div>
+        <div class="focus-pct">${Math.round(c.pct)}%</div>
+        ${c.pct < 60 ? '<span class="tag tag-red" style="font-size:9px">Focus!</span>' : ''}
+      </div>`;
+    }).join('');
+  }
+
+  // Update charts
+  updateCharts(m, labAvg, cgpa, combinedPct);
+}
+
+function updateCharts(m, labAvg, cgpa, combinedPct) {
+  const chartOpts = {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#64748b', font: { family:'Outfit', size:11 } } } }
+  };
+
+  // Marks Bar Chart
+  if (marksChartInst) marksChartInst.destroy();
+  const marksCtx = document.getElementById('marksChart').getContext('2d');
+  marksChartInst = new Chart(marksCtx, {
+    type: 'bar',
+    data: {
+      labels: ['DIT 1', 'Mid-Term', 'DIT 2', 'Innov. DIT', 'TA1', 'TA2'],
+      datasets: [
+        { label:'Your Marks', data:[m.DIT1, m.MidTerm, m.DIT2, m.InnovativeDIT, m.TA1, m.TA2],
+          backgroundColor:'rgba(56,189,248,0.7)', borderColor:'#38bdf8', borderWidth:1.5, borderRadius:6 },
+        { label:'Max Marks', data:[20,30,20,10,10,10],
+          backgroundColor:'rgba(30,45,69,0.6)', borderColor:'#1e2d45', borderWidth:1, borderRadius:6 }
+      ]
+    },
+    options: { ...chartOpts, scales: { x:{ticks:{color:'#64748b'}}, y:{ticks:{color:'#64748b'}, grid:{color:'rgba(255,255,255,0.04)'}} } }
+  });
+
+  // Lab Line Chart
+  if (labChartInst) labChartInst.destroy();
+  const labCtx = document.getElementById('labChart').getContext('2d');
+  labChartInst = new Chart(labCtx, {
+    type: 'line',
+    data: {
+      labels: Array.from({length:11},(_,i)=>`Lab ${i}`),
+      datasets: [
+        { label:'Lab Score', data: m.labs,
+          borderColor:'#34d399', backgroundColor:'rgba(52,211,153,0.1)',
+          pointBackgroundColor:'#34d399', tension:0.4, fill:true, borderWidth:2.5 },
+        { label:'Max (10)', data: Array(11).fill(10),
+          borderColor:'rgba(30,45,69,0.8)', borderDash:[4,4], borderWidth:1.5, pointRadius:0, fill:false }
+      ]
+    },
+    options: {
+      ...chartOpts,
+      scales: {
+        x:{ticks:{color:'#64748b', font:{size:10}}},
+        y:{min:0, max:10, ticks:{color:'#64748b'}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+
+  // Radar Chart
+  if (radarChartInst) radarChartInst.destroy();
+  const radarCtx = document.getElementById('radarChart').getContext('2d');
+  const labPct = (parseFloat(labAvg)/10)*100;
+  radarChartInst = new Chart(radarCtx, {
+    type: 'radar',
+    data: {
+      labels: ['DIT 1', 'Mid-Term', 'DIT 2', 'Innov.DIT', 'TA1+TA2', 'Lab'],
+      datasets: [{
+        label:'Score %',
+        data: [(m.DIT1/20)*100,(m.MidTerm/30)*100,(m.DIT2/20)*100,(m.InnovativeDIT/10)*100,((m.TA1+m.TA2)/20)*100, labPct],
+        backgroundColor:'rgba(56,189,248,0.1)', borderColor:'#38bdf8',
+        pointBackgroundColor:'#38bdf8', borderWidth:2
+      }]
+    },
+    options: {
+      ...chartOpts,
+      scales: { r: { min:0, max:100, ticks:{color:'#64748b', font:{size:9}, backdropColor:'transparent'}, grid:{color:'rgba(255,255,255,0.06)'}, pointLabels:{color:'#94a3b8', font:{size:10}} } }
+    }
+  });
+
+  // CGPA Scenario Chart
+  if (cgpaScenarioInst) cgpaScenarioInst.destroy();
+  const scCtx = document.getElementById('cgpaScenarioChart').getContext('2d');
+  const base = parseFloat(cgpa);
+  cgpaScenarioInst = new Chart(scCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Current', '+5% Effort', '+10% Effort', '+15% Effort', 'Max Possible'],
+      datasets: [{
+        label:'Predicted CGPA',
+        data: [base, Math.min(10,(base+0.3)).toFixed(2), Math.min(10,(base+0.6)).toFixed(2), Math.min(10,(base+0.9)).toFixed(2), Math.min(10,(base+1.5)).toFixed(2)],
+        backgroundColor: ['rgba(56,189,248,0.7)','rgba(52,211,153,0.5)','rgba(52,211,153,0.65)','rgba(52,211,153,0.8)','rgba(52,211,153,0.95)'],
+        borderColor: ['#38bdf8','#34d399','#34d399','#34d399','#34d399'],
+        borderWidth:1.5, borderRadius:8
+      }]
+    },
+    options: {
+      ...chartOpts,
+      scales: { x:{ticks:{color:'#64748b',font:{size:10}}}, y:{min:0,max:10, ticks:{color:'#64748b'}, grid:{color:'rgba(255,255,255,0.04)'}} },
+      plugins: { legend: { display:false }, tooltip: { callbacks: { label: ctx => ` CGPA: ${ctx.parsed.y}` } } }
+    }
+  });
+}
+
+// Save student
+function saveStudent() {
+  const data = getFormData();
+  if (!data.name || !data.roll) { showToast('Please enter name and roll number!', 'error'); return; }
+  const students = Storage.getStudents();
+  const idx = students.findIndex(s => s.roll === data.roll);
+  if (idx >= 0) { students[idx] = data; showToast('Student updated!'); }
+  else { students.push(data); showToast('Student saved!'); }
+  Storage.saveStudents(students);
+  renderStudentTable();
+}
+
+function clearForm() {
+  ['inp_name','inp_roll','inp_dit1','inp_mid','inp_dit2','inp_idit','inp_ta1','inp_ta2'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  for (let i = 0; i <= 10; i++) { const el = document.getElementById(`inp_lab${i}`); if(el) el.value=''; }
+  updateDashboard();
+}
+
+function loadStudent(roll) {
+  const students = Storage.getStudents();
+  const s = students.find(st => st.roll === roll);
+  if (!s) return;
+  document.getElementById('inp_name').value = s.name;
+  document.getElementById('inp_roll').value = s.roll;
+  document.getElementById('inp_branch').value = s.branch;
+  document.getElementById('inp_sem').value = s.semester;
+  document.getElementById('inp_dit1').value = s.marks.DIT1;
+  document.getElementById('inp_mid').value = s.marks.MidTerm;
+  document.getElementById('inp_dit2').value = s.marks.DIT2;
+  document.getElementById('inp_idit').value = s.marks.InnovativeDIT;
+  document.getElementById('inp_ta1').value = s.marks.TA1;
+  document.getElementById('inp_ta2').value = s.marks.TA2;
+  s.marks.labs.forEach((v, i) => { const el = document.getElementById(`inp_lab${i}`); if(el) el.value=v; });
+  updateDashboard();
+  window.scrollTo({top:0, behavior:'smooth'});
+  showToast(`Loaded: ${s.name}`);
+}
+
+function deleteStudent(roll) {
+  if (!confirm('Delete this student?')) return;
+  let students = Storage.getStudents().filter(s => s.roll !== roll);
+  Storage.saveStudents(students);
+  renderStudentTable();
+  showToast('Student deleted!');
+}
+
+function renderStudentTable(filter = '') {
+  const students = Storage.getStudents().filter(s =>
+    !filter || s.name.toLowerCase().includes(filter.toLowerCase()) || s.roll.includes(filter)
+  );
+  const wrap = document.getElementById('studentTableWrap');
+  if (!students.length) {
+    wrap.innerHTML = `<div class="empty-state"><div class="empty-icon">🎓</div><div class="empty-title">No students added yet</div><div>Fill the form and click "Save to Dashboard"</div></div>`;
+    return;
+  }
+  wrap.innerHTML = `<div style="overflow-x:auto"><table>
+    <thead><tr>
+      <th>Name</th><th>Roll No.</th><th>Branch</th>
+      <th>Total Marks</th><th>Lab Avg</th><th>CGPA Est.</th><th>Actions</th>
+    </tr></thead>
+    <tbody>
+      ${students.map(s => {
+        const m = s.marks;
+        const total = m.DIT1+m.MidTerm+m.DIT2+m.InnovativeDIT+m.TA1+m.TA2;
+        const labFilled = m.labs.filter(v=>v>0).length;
+        const labAvg = labFilled>0 ? (m.labs.reduce((a,b)=>a+b,0)/labFilled).toFixed(1) : 0;
+        const pct = (total/100)*100;
+        const labPct = (labAvg/10)*100;
+        const cgpa = Math.min(10, ((pct*0.7+labPct*0.3)/100)*10).toFixed(2);
+        const color = cgpa>=8?'var(--green)':cgpa>=6?'var(--yellow)':'var(--red)';
+        return `<tr>
+          <td><strong>${s.name}</strong></td>
+          <td><span style="font-family:var(--mono);font-size:11px;color:var(--muted)">${s.roll}</span></td>
+          <td><span class="tag tag-blue">${s.branch}</span></td>
+          <td>${total}<span style="color:var(--muted)">/100</span></td>
+          <td>${labAvg}/10</td>
+          <td><strong style="color:${color}">${cgpa}</strong></td>
+          <td>
+            <button class="btn btn-outline" style="padding:6px 12px;font-size:12px" onclick="loadStudent('${s.roll}')">Edit</button>
+            <button class="btn btn-red" style="padding:6px 12px;font-size:12px;margin-left:6px" onclick="deleteStudent('${s.roll}')">Del</button>
+          </td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+function filterStudents(val) { renderStudentTable(val); }
+function importData() { document.getElementById('importInput').click(); }
+async function handleImport(input) {
+  if (input.files[0]) {
+    await Storage.importJSON(input.files[0]);
+    renderStudentTable();
+  }
+}
+
+// Init
+renderStudentTable();
+</script>
+</body>
+</html>

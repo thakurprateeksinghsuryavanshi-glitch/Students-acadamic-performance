@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interview Prep — DataPath SRMU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .page-wrap { padding: 90px 0 60px; }
+    .page-header { padding: 48px 60px 32px; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; }
+    .page-title { font-size: 36px; font-weight: 800; color: var(--text); }
+    .content { padding: 40px 60px; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+    .tab { padding: 10px 22px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all 0.2s; font-family: var(--sans); }
+    .tab.active { background: var(--accent); color: #0a0f1e; border-color: var(--accent); }
+    .progress-summary { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 28px; margin-bottom: 28px; display: flex; gap: 32px; flex-wrap: wrap; align-items: center; }
+    .prog-item { text-align: center; }
+    .prog-num { font-size: 28px; font-weight: 800; color: var(--accent); }
+    .prog-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .q-list { display: flex; flex-direction: column; gap: 12px; }
+    .q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
+    .q-card.done { border-color: rgba(52,211,153,0.4); }
+    .q-header { display: flex; align-items: center; gap: 14px; padding: 18px 22px; cursor: pointer; }
+    .q-check { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; font-size: 12px; cursor: pointer; }
+    .q-card.done .q-check { background: var(--green); border-color: var(--green); color: #0a0f1e; }
+    .q-text { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.5; }
+    .q-card.done .q-text { color: var(--muted); text-decoration: line-through; }
+    .q-difficulty { flex-shrink: 0; }
+    .q-expand-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; }
+    .q-expand-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .q-answer { padding: 0 22px 20px 58px; display: none; }
+    .q-answer.open { display: block; }
+    .q-answer-text { font-size: 13px; color: var(--muted); line-height: 1.8; background: var(--surface2); border-radius: 10px; padding: 16px; }
+    .q-answer-text code { background: rgba(56,189,248,0.1); color: var(--accent); padding: 2px 6px; border-radius: 4px; font-family: var(--mono); font-size: 12px; }
+    .q-answer-text pre { background: #0a0f1e; padding: 12px 16px; border-radius: 8px; margin-top: 10px; overflow-x: auto; font-family: var(--mono); font-size: 12px; color: var(--text); border: 1px solid var(--border); white-space: pre-wrap; }
+    @media(max-width:768px) { .page-header,.content{padding:30px 20px;} }
+  </style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">📊 DataPath<span>SRMU</span></a>
+    <div class="nav-links">
+      <a href="portfolio.html">Portfolio</a>
+      <a href="interview.html" class="active">Interview</a>
+      <a href="toolbox.html">Toolbox</a>
+      <a href="dashboard.html" class="nav-highlight">📈 Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <div>
+      <div class="page-title">🎯 Interview Prep Tracker</div>
+      <div style="color:var(--muted);font-size:14px;margin-top:6px">Check off questions as you practice. Progress is saved automatically.</div>
+    </div>
+    <button class="btn btn-outline" onclick="resetProgress()">🔄 Reset Progress</button>
+  </div>
+
+  <div class="content">
+    <div class="progress-summary reveal" id="progressSummary"></div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" onclick="filterCat('all',this)">All Questions</button>
+      <button class="tab" onclick="filterCat('sql',this)">🗃 SQL</button>
+      <button class="tab" onclick="filterCat('python',this)">🐍 Python</button>
+      <button class="tab" onclick="filterCat('probability',this)">🎲 Probability & Stats</button>
+      <button class="tab" onclick="filterCat('ml',this)">🤖 ML Concepts</button>
+    </div>
+
+    <div class="q-list" id="qList"></div>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+const questions = [
+  // SQL
+  { id:'sql1', cat:'sql', diff:'easy', q:'Write a SQL query to find the second highest salary in a table.', a:`Use a subquery or <code>DENSE_RANK()</code>:<pre>SELECT MAX(salary) AS second_highest
+FROM employees
+WHERE salary < (SELECT MAX(salary) FROM employees);</pre>Or with window function:<pre>SELECT salary FROM (
+  SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) as rnk
+  FROM employees
+) t WHERE rnk = 2;</pre>` },
+  { id:'sql2', cat:'sql', diff:'easy', q:'What is the difference between WHERE and HAVING in SQL?', a:`<strong>WHERE</strong> filters rows <em>before</em> grouping and cannot use aggregate functions. <strong>HAVING</strong> filters <em>after</em> grouping and can use aggregates like COUNT, SUM, AVG.<pre>-- WHERE: filters raw rows
+SELECT * FROM orders WHERE amount > 1000;
+
+-- HAVING: filters groups
+SELECT city, COUNT(*) as cnt
+FROM orders
+GROUP BY city
+HAVING COUNT(*) > 10;</pre>` },
+  { id:'sql3', cat:'sql', diff:'medium', q:'Explain the difference between INNER JOIN, LEFT JOIN, and RIGHT JOIN with examples.', a:`<strong>INNER JOIN:</strong> Returns only matching rows from both tables.<br><strong>LEFT JOIN:</strong> Returns all rows from the left table + matching rows from right (NULLs if no match).<br><strong>RIGHT JOIN:</strong> Opposite of LEFT JOIN.<pre>-- INNER JOIN
+SELECT a.name, b.order_id
+FROM customers a INNER JOIN orders b ON a.id = b.customer_id;
+
+-- LEFT JOIN (all customers, even without orders)
+SELECT a.name, b.order_id
+FROM customers a LEFT JOIN orders b ON a.id = b.customer_id;</pre>` },
+  { id:'sql4', cat:'sql', diff:'medium', q:'What are window functions? Give an example using RANK().', a:`Window functions perform calculations across a set of rows related to the current row WITHOUT collapsing them into a single output row.<pre>SELECT name, department, salary,
+  RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS rank_in_dept
+FROM employees;</pre>This gives each employee their rank within their department.` },
+  { id:'sql5', cat:'sql', diff:'hard', q:'Write a query to find customers who placed orders in every month of 2023.', a:`<pre>SELECT customer_id
+FROM orders
+WHERE YEAR(order_date) = 2023
+GROUP BY customer_id
+HAVING COUNT(DISTINCT MONTH(order_date)) = 12;</pre>Key insight: use <code>COUNT(DISTINCT MONTH(...))</code> and check it equals 12.` },
+
+  // Python
+  { id:'py1', cat:'python', diff:'easy', q:'What is the difference between a list and a tuple in Python?', a:`<strong>List</strong>: Mutable (can be changed), uses square brackets <code>[]</code>, slightly slower.<br><strong>Tuple</strong>: Immutable (cannot be changed), uses parentheses <code>()</code>, faster and hashable (can be dict keys).<pre>lst = [1, 2, 3]
+lst[0] = 10  # Works fine
+
+tup = (1, 2, 3)
+tup[0] = 10  # TypeError: 'tuple' object does not support item assignment</pre>Use tuples for fixed data like coordinates, use lists for collections that change.` },
+  { id:'py2', cat:'python', diff:'medium', q:'How do you handle missing values in a Pandas DataFrame?', a:`<pre>import pandas as pd
+df = pd.read_csv('data.csv')
+
+# Check missing values
+print(df.isnull().sum())
+
+# Drop rows with any missing values
+df_clean = df.dropna()
+
+# Fill with mean
+df['age'].fillna(df['age'].mean(), inplace=True)
+
+# Fill with forward fill (good for time series)
+df.fillna(method='ffill', inplace=True)
+
+# Drop columns with >30% missing
+threshold = len(df) * 0.3
+df.dropna(axis=1, thresh=threshold, inplace=True)</pre>Always decide strategy based on WHY data is missing (MCAR, MAR, MNAR).` },
+  { id:'py3', cat:'python', diff:'medium', q:'Explain list comprehensions vs. map() with a performance comparison.', a:`<strong>List comprehension</strong> is generally faster and more Pythonic:<pre># List comprehension
+squares = [x**2 for x in range(1000)]
+
+# map() - returns iterator, slightly different use case
+squares = list(map(lambda x: x**2, range(1000)))</pre>Use <code>map()</code> when applying an existing function to avoid a lambda. List comprehensions are preferred for readability. For large datasets, consider <code>numpy</code> vectorization which is 10-100x faster than both.` },
+  { id:'py4', cat:'python', diff:'hard', q:'How would you find duplicate rows in a DataFrame and what strategies exist for handling them?', a:`<pre>import pandas as pd
+
+# Find duplicates
+dups = df[df.duplicated()]  # all duplicates
+dups_all = df[df.duplicated(keep=False)]  # including originals
+
+# Count duplicates
+print(f"Duplicates: {df.duplicated().sum()}")
+
+# Remove duplicates
+df_clean = df.drop_duplicates()  # keep first
+
+# Keep last occurrence
+df_clean = df.drop_duplicates(keep='last')
+
+# Check specific columns only
+df_clean = df.drop_duplicates(subset=['name', 'email'])</pre>Strategies: Drop if truly identical, merge/aggregate if partial duplicates, investigate cause if unexpected.` },
+  { id:'py5', cat:'python', diff:'medium', q:"What is a lambda function? When should you use it vs. a regular function?", a:`A <strong>lambda</strong> is an anonymous, single-expression function.<pre>double = lambda x: x * 2  # lambda
+def double(x): return x * 2  # equivalent regular function
+
+# Good use of lambda: with map, filter, sorted
+data = [{'name':'Priya','age':22}, {'name':'Raj','age':20}]
+sorted_data = sorted(data, key=lambda x: x['age'])
+
+# Bad use: complex logic -> use def instead
+bad = lambda x: x if x > 0 else -x  # use def for clarity</pre>Use lambda for short, throwaway operations. Use <code>def</code> for anything with documentation needs or multiple lines.` },
+
+  // Probability
+  { id:'prob1', cat:'probability', diff:'easy', q:'What is the difference between mean, median, and mode?', a:`<strong>Mean:</strong> Average of all values. Sensitive to outliers.<br><strong>Median:</strong> Middle value when sorted. Robust to outliers.<br><strong>Mode:</strong> Most frequent value. Useful for categorical data.<pre>data = [2, 3, 3, 5, 7, 100]
+mean = 20  # pulled up by 100
+median = 4  # middle of sorted data
+mode = 3   # appears twice</pre><strong>Rule of thumb:</strong> Use median for income/housing data (skewed), mean for symmetric distributions.` },
+  { id:'prob2', cat:'probability', diff:'medium', q:'Explain the Central Limit Theorem in simple terms.', a:`The CLT states: <strong>regardless of the population distribution, the distribution of sample means approaches a normal distribution as sample size increases (n ≥ 30).</strong><br><br>Why it matters in data science: It allows us to use normal distribution assumptions for hypothesis testing even when we don't know the underlying distribution.<br><br>Example: If you sample the heights of 100 students from SRMU repeatedly, the distribution of those sample means will be approximately normal, even if individual heights aren't perfectly normal.` },
+  { id:'prob3', cat:'probability', diff:'medium', q:"What is p-value? What does p < 0.05 mean?", a:`The <strong>p-value</strong> is the probability of observing results as extreme as yours, assuming the null hypothesis is true.<br><br><strong>p < 0.05</strong> means: if there were truly no effect, there's less than 5% chance of seeing this result by random chance. So we reject the null hypothesis.<br><br>Common misconception: p-value is NOT the probability that your hypothesis is true. It's about the data given the hypothesis.` },
+  { id:'prob4', cat:'probability', diff:'hard', q:'Explain overfitting and underfitting. How do you detect and fix them?', a:`<strong>Overfitting:</strong> Model learns training data too well (including noise). High training accuracy, low test accuracy.<br><strong>Underfitting:</strong> Model is too simple to capture patterns. Low accuracy on both.<pre>Detection:
+- Train acc: 99%, Test acc: 72% → Overfitting
+- Train acc: 65%, Test acc: 63% → Underfitting
+
+Fix Overfitting:
+- Add more training data
+- Use regularization (L1/L2)
+- Dropout layers (neural nets)
+- Cross-validation
+- Feature selection
+
+Fix Underfitting:
+- Use more complex model
+- Add more features
+- Reduce regularization
+- Train longer</pre>` },
+  { id:'prob5', cat:'probability', diff:'medium', q:'What is the difference between correlation and causation?', a:`<strong>Correlation:</strong> Two variables move together statistically. Does not imply one causes the other.<br><strong>Causation:</strong> One variable directly causes changes in another.<br><br>Classic example: Ice cream sales and drowning rates are correlated — both increase in summer. But ice cream doesn't cause drowning. The hidden variable is <em>hot weather</em>.<br><br>To establish causation: Use controlled experiments (A/B tests), randomization, or causal inference methods like instrumental variables.` },
+
+  // ML
+  { id:'ml1', cat:'ml', diff:'easy', q:'What is the difference between supervised and unsupervised learning?', a:`<strong>Supervised:</strong> Model is trained on labeled data. Goal: learn mapping from inputs to outputs.<ul><li>Classification (spam/not spam)</li><li>Regression (predict salary)</li></ul><strong>Unsupervised:</strong> No labels. Model finds patterns on its own.<ul><li>Clustering (k-means)</li><li>Dimensionality reduction (PCA)</li></ul>Analogy: Supervised = teacher gives answers. Unsupervised = student figures it out alone.` },
+  { id:'ml2', cat:'ml', diff:'medium', q:'Explain precision vs. recall. When do you optimize for each?', a:`<pre>Precision = TP / (TP + FP)  → Of predicted positives, how many are correct?
+Recall    = TP / (TP + FN)  → Of actual positives, how many did we catch?</pre><strong>Optimize Precision when</strong> false positives are costly: Spam detection (legitimate email as spam is bad).<br><strong>Optimize Recall when</strong> false negatives are costly: Cancer detection (missing cancer is dangerous).<br><br>F1-Score = harmonic mean of both. Use when you need balance.` },
+  { id:'ml3', cat:'ml', diff:'medium', q:'What is cross-validation and why is it important?', a:`Cross-validation is a technique to evaluate model performance more reliably by testing on multiple splits of data.<pre>from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier()
+scores = cross_val_score(model, X, y, cv=5)
+print(f"Mean: {scores.mean():.3f}, Std: {scores.std():.3f}")</pre><strong>k-Fold CV:</strong> Split data into k parts. Train on k-1, test on 1. Repeat k times. Average the scores.<br><br>This prevents the model from getting lucky on one particular train/test split.` },
+];
+
+let currentCat = 'all';
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderQuestions();
+}
+
+function renderQuestions() {
+  const filtered = currentCat === 'all' ? questions : questions.filter(q => q.cat === currentCat);
+  const list = document.getElementById('qList');
+  list.innerHTML = filtered.map(q => {
+    const done = InterviewStorage.isComplete(q.id);
+    const diffColor = q.diff === 'easy' ? 'tag-green' : q.diff === 'medium' ? 'tag-yellow' : 'tag-red';
+    return `<div class="q-card ${done?'done':''}" id="qcard_${q.id}">
+      <div class="q-header">
+        <div class="q-check" onclick="toggleQ('${q.id}')">${done?'✓':''}</div>
+        <div class="q-text">${q.q}</div>
+        <span class="tag ${diffColor}" style="flex-shrink:0">${q.diff}</span>
+        <button class="q-expand-btn" onclick="toggleAnswer('${q.id}')">View Answer ↓</button>
+      </div>
+      <div class="q-answer" id="ans_${q.id}">
+        <div class="q-answer-text">${q.a}</div>
+      </div>
+    </div>`;
+  }).join('');
+  updateSummary();
+}
+
+function toggleQ(id) {
+  const done = InterviewStorage.toggleQuestion(id);
+  const card = document.getElementById(`qcard_${id}`);
+  const check = card.querySelector('.q-check');
+  card.classList.toggle('done', done);
+  check.textContent = done ? '✓' : '';
+  updateSummary();
+}
+
+function toggleAnswer(id) {
+  const el = document.getElementById(`ans_${id}`);
+  el.classList.toggle('open');
+}
+
+function updateSummary() {
+  const progress = InterviewStorage.getProgress();
+  const total = questions.length;
+  const done = Object.values(progress).filter(Boolean).length;
+  const sql = questions.filter(q=>q.cat==='sql').length;
+  const py = questions.filter(q=>q.cat==='python').length;
+  const prob = questions.filter(q=>q.cat==='probability').length;
+  const ml = questions.filter(q=>q.cat==='ml').length;
+  const doneSQL = questions.filter(q=>q.cat==='sql' && progress[q.id]).length;
+  const donePY = questions.filter(q=>q.cat==='python' && progress[q.id]).length;
+  const doneProb = questions.filter(q=>q.cat==='probability' && progress[q.id]).length;
+  const doneML = questions.filter(q=>q.cat==='ml' && progress[q.id]).length;
+
+  document.getElementById('progressSummary').innerHTML = `
+    <div class="prog-item"><div class="prog-num">${done}/${total}</div><div class="prog-label">Total Done</div></div>
+    <div style="flex:1"><div style="font-size:11px;color:var(--muted);margin-bottom:6px">Overall Progress</div><div class="progress-wrap"><div class="progress-bar green" style="width:${(done/total)*100}%"></div></div></div>
+    <div class="prog-item"><div class="prog-num">${doneSQL}/${sql}</div><div class="prog-label">SQL</div></div>
+    <div class="prog-item"><div class="prog-num">${donePY}/${py}</div><div class="prog-label">Python</div></div>
+    <div class="prog-item"><div class="prog-num">${doneProb}/${prob}</div><div class="prog-label">Stats</div></div>
+    <div class="prog-item"><div class="prog-num">${doneML}/${ml}</div><div class="prog-label">ML</div></div>
+  `;
+}
+
+function resetProgress() {
+  if (!confirm('Reset all question progress?')) return;
+  localStorage.removeItem('interview_progress');
+  renderQuestions();
+  showToast('Progress reset!');
+}
+
+renderQuestions();
+</script>
+</body>
+</html>
