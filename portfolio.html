@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Portfolio Guide — DataPath SRMU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .page-wrap { padding: 90px 0 60px; }
+    .page-header { padding: 48px 60px 32px; border-bottom: 1px solid var(--border); }
+    .page-title { font-size: 36px; font-weight: 800; color: var(--text); }
+    .page-sub { font-size: 15px; color: var(--muted); margin-top: 8px; }
+    .content { padding: 48px 60px; max-width: 1100px; }
+    .project-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px; margin-bottom: 24px;
+      transition: border-color 0.3s;
+    }
+    .project-card:hover { border-color: var(--accent); }
+    .project-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .project-num { font-family: var(--mono); font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 6px; }
+    .project-name { font-size: 20px; font-weight: 700; color: var(--text); }
+    .project-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .steps { counter-reset: step; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .step { display: flex; gap: 14px; align-items: flex-start; }
+    .step::before { counter-increment: step; content: counter(step); background: rgba(56,189,248,0.1); color: var(--accent); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .step-text { font-size: 14px; color: var(--muted); line-height: 1.7; }
+    .step-text strong { color: var(--text); }
+    .tip-box { background: rgba(56,189,248,0.06); border: 1px solid rgba(56,189,248,0.15); border-radius: 10px; padding: 16px 20px; margin-top: 16px; }
+    .tip-box strong { color: var(--accent); }
+    .tip-box p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    code { background: rgba(129,140,248,0.1); color: var(--accent2); padding: 2px 8px; border-radius: 5px; font-family: var(--mono); font-size: 12px; }
+    @media(max-width:768px) { .page-header,.content{padding:30px 20px;} }
+  </style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">📊 DataPath<span>SRMU</span></a>
+    <div class="nav-links">
+      <a href="portfolio.html" class="active">Portfolio</a>
+      <a href="interview.html">Interview</a>
+      <a href="toolbox.html">Toolbox</a>
+      <a href="dashboard.html" class="nav-highlight">📈 Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <div class="page-title">🗂️ Project Portfolio Guide</div>
+    <div class="page-sub">Real-world project tutorials that land jobs — not just clean Kaggle notebooks.</div>
+  </div>
+
+  <div class="content">
+    <div style="margin-bottom:32px">
+      <p style="color:var(--muted);font-size:14px;line-height:1.8">
+        Most students build portfolios using clean, pre-processed datasets. Recruiters are tired of seeing the same Titanic and Iris projects.
+        <strong style="color:var(--text)">These 5 projects use messy, real-world data</strong> and will make you stand out.
+      </p>
+    </div>
+
+    <!-- PROJECT 1 -->
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-num">Project 01</div>
+          <div class="project-name">📦 E-commerce Sales Data Cleaning & EDA</div>
+          <div class="project-tags">
+            <span class="tag tag-blue">Python</span>
+            <span class="tag tag-green">Pandas</span>
+            <span class="tag tag-yellow">Matplotlib</span>
+            <span class="tag tag-purple">Beginner</span>
+          </div>
+        </div>
+        <span class="tag tag-green">⏱ 3–5 Days</span>
+      </div>
+      <ol class="steps">
+        <li class="step"><div class="step-text"><strong>Get Real Messy Data:</strong> Download the "Brazilian E-Commerce" dataset from Kaggle or use data.gov.in for Indian e-commerce CSVs with duplicates, nulls, and inconsistent formats.</div></li>
+        <li class="step"><div class="step-text"><strong>Document Issues First:</strong> Before cleaning, write a markdown file listing every problem you find — missing values %, column type errors, duplicates. Recruiters love this.</div></li>
+        <li class="step"><div class="step-text"><strong>Clean with code comments:</strong> Use <code>pandas</code> with clear comments explaining WHY each cleaning decision was made. <code>df.dropna()</code> is not enough — explain thresholds.</div></li>
+        <li class="step"><div class="step-text"><strong>EDA with business questions:</strong> Don't just plot histograms. Answer: "Which cities have the most returns?", "What time of day drives most sales?"</div></li>
+        <li class="step"><div class="step-text"><strong>Write a README like a report:</strong> Summarize findings in plain English. Add screenshots. Host on GitHub.</div></li>
+      </ol>
+      <div class="tip-box"><strong>💡 Pro Tip:</strong><p>Add a section called "Data Quality Report" showing before/after cleaning stats. This proves professional-level thinking.</p></div>
+    </div>
+
+    <!-- PROJECT 2 -->
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-num">Project 02</div>
+          <div class="project-name">📊 Student Performance Prediction Model</div>
+          <div class="project-tags">
+            <span class="tag tag-blue">Python</span>
+            <span class="tag tag-green">Scikit-learn</span>
+            <span class="tag tag-yellow">Feature Engineering</span>
+            <span class="tag tag-purple">Intermediate</span>
+          </div>
+        </div>
+        <span class="tag tag-yellow">⏱ 1–2 Weeks</span>
+      </div>
+      <ol class="steps">
+        <li class="step"><div class="step-text"><strong>Gather real student data:</strong> Use the UCI "Student Performance" dataset or create a dataset from your class (anonymized). Real context = better project.</div></li>
+        <li class="step"><div class="step-text"><strong>Feature engineering:</strong> Create new features like "attendance_ratio", "improvement_rate" (DIT1 vs DIT2), "lab_consistency". This is what separates average from great analysts.</div></li>
+        <li class="step"><div class="step-text"><strong>Train multiple models:</strong> Compare Logistic Regression, Random Forest, and XGBoost. Document why one outperforms others.</div></li>
+        <li class="step"><div class="step-text"><strong>Interpret results:</strong> Use SHAP values or feature importance plots to explain WHICH factors most affect grades. Business-style explanation is key.</div></li>
+        <li class="step"><div class="step-text"><strong>Build a simple prediction UI:</strong> Create a basic HTML form that predicts grade from inputs. Deploy free on GitHub Pages.</div></li>
+      </ol>
+      <div class="tip-box"><strong>💡 Pro Tip:</strong><p>Connect this project to your own SRMU data — it makes your portfolio deeply personal and demonstrably practical.</p></div>
+    </div>
+
+    <!-- PROJECT 3 -->
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-num">Project 03</div>
+          <div class="project-name">🐦 Twitter Sentiment Analysis — Real Scrape</div>
+          <div class="project-tags">
+            <span class="tag tag-blue">Python</span>
+            <span class="tag tag-green">NLP</span>
+            <span class="tag tag-yellow">TextBlob / VADER</span>
+            <span class="tag tag-red">Intermediate</span>
+          </div>
+        </div>
+        <span class="tag tag-yellow">⏱ 1 Week</span>
+      </div>
+      <ol class="steps">
+        <li class="step"><div class="step-text"><strong>Use a timely topic:</strong> IPL matches, Bollywood movies, Indian product launches. Real tweets are messy — abbreviations, Hindi-English mix, emojis.</div></li>
+        <li class="step"><div class="step-text"><strong>Text cleaning pipeline:</strong> Remove URLs, mentions, hashtags. Handle Hindi romanization. Normalize slang. Show this pipeline as a reusable function.</div></li>
+        <li class="step"><div class="step-text"><strong>Multi-method comparison:</strong> Compare VADER, TextBlob, and a fine-tuned DistilBERT. Show accuracy differences with a confusion matrix.</div></li>
+        <li class="step"><div class="step-text"><strong>Visualize trends over time:</strong> Show how sentiment shifted hour-by-hour during an event. Timeline charts tell stories.</div></li>
+      </ol>
+    </div>
+
+    <!-- PROJECT 4 -->
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-num">Project 04</div>
+          <div class="project-name">📈 Stock Market Forecasting (Indian NSE/BSE)</div>
+          <div class="project-tags">
+            <span class="tag tag-blue">Python</span>
+            <span class="tag tag-green">Time Series</span>
+            <span class="tag tag-yellow">LSTM</span>
+            <span class="tag tag-red">Advanced</span>
+          </div>
+        </div>
+        <span class="tag tag-red">⏱ 2–3 Weeks</span>
+      </div>
+      <ol class="steps">
+        <li class="step"><div class="step-text"><strong>Download NSE data:</strong> Use <code>yfinance</code> for free historical data. Pick a company like TCS, Infosys, or Reliance — something you can explain the business context of.</div></li>
+        <li class="step"><div class="step-text"><strong>Feature engineering for time series:</strong> Add rolling means, volatility windows, RSI, MACD. Show you understand financial indicators.</div></li>
+        <li class="step"><div class="step-text"><strong>Build LSTM model:</strong> Use Keras/TensorFlow. Document hyperparameter choices — why this many units, this window size?</div></li>
+        <li class="step"><div class="step-text"><strong>Always include caveats:</strong> Add a disclaimer section: "This model is for educational purposes." This shows professional maturity.</div></li>
+      </ol>
+    </div>
+
+    <!-- PROJECT 5 -->
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-num">Project 05</div>
+          <div class="project-name">🏥 Healthcare Data Dashboard (End-to-End)</div>
+          <div class="project-tags">
+            <span class="tag tag-blue">SQL</span>
+            <span class="tag tag-green">Python</span>
+            <span class="tag tag-yellow">Tableau / Power BI</span>
+            <span class="tag tag-red">Advanced</span>
+          </div>
+        </div>
+        <span class="tag tag-red">⏱ 3–4 Weeks</span>
+      </div>
+      <ol class="steps">
+        <li class="step"><div class="step-text"><strong>Use government health data:</strong> data.gov.in has hospital, disease, and demographic datasets. Real government data is messy and valuable.</div></li>
+        <li class="step"><div class="step-text"><strong>Build a SQL schema:</strong> Store cleaned data in SQLite. Write 10+ analytical queries. This impresses SQL interviewers directly.</div></li>
+        <li class="step"><div class="step-text"><strong>Python + SQL pipeline:</strong> Use <code>SQLAlchemy</code> + <code>Pandas</code> to automate data loading and transformation.</div></li>
+        <li class="step"><div class="step-text"><strong>Dashboard in Tableau Public:</strong> Free to publish. A live, public dashboard is instantly shareable with recruiters via a link.</div></li>
+        <li class="step"><div class="step-text"><strong>Write a business case:</strong> "What insights would help a hospital administrator?" Frame everything as a business problem, not a coding exercise.</div></li>
+      </ol>
+      <div class="tip-box"><strong>💡 Pro Tip:</strong><p>This is your capstone project. Budget extra time. The combination of SQL + Python + BI Tool in one project is rare and highly valued by employers.</p></div>
+    </div>
+
+    <div class="card reveal" style="background:rgba(52,211,153,0.05);border-color:rgba(52,211,153,0.2);text-align:center;padding:40px">
+      <div style="font-size:28px;margin-bottom:12px">🚀</div>
+      <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px">Ready to track your progress?</div>
+      <div style="color:var(--muted);font-size:14px;margin-bottom:20px">Use the dashboard to monitor your CGPA and identify weak areas while building these projects.</div>
+      <a href="dashboard.html" class="btn btn-primary">Open Dashboard →</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

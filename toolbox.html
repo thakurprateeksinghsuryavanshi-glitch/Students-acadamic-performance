@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Toolbox Showdowns — DataPath SRMU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .page-wrap { padding: 90px 0 60px; }
+    .page-header { padding: 48px 60px 32px; border-bottom: 1px solid var(--border); }
+    .content { padding: 48px 60px; max-width: 1100px; }
+    .vs-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; margin-bottom: 40px; }
+    .vs-header { padding: 28px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .vs-title { font-size: 20px; font-weight: 800; color: var(--text); }
+    .vs-context { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .vs-body { display: grid; grid-template-columns: 1fr auto 1fr; }
+    .vs-side { padding: 28px 32px; }
+    .vs-side.left { border-right: 1px solid var(--border); }
+    .vs-divider { display: flex; align-items: center; justify-content: center; padding: 0 8px; font-size: 20px; font-weight: 800; color: var(--muted); border-right: 1px solid var(--border); background: rgba(255,255,255,0.02); writing-mode: vertical-rl; letter-spacing: 0.2em; }
+    .vs-tool-name { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+    .vs-pros, .vs-cons { list-style: none; margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+    .vs-pros li::before { content: '✅ '; }
+    .vs-cons li::before { content: '⚠️ '; }
+    .vs-pros li, .vs-cons li { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .vs-verdict { padding: 20px 32px; background: rgba(56,189,248,0.04); border-top: 1px solid var(--border); font-size: 13px; }
+    .verdict-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 6px; }
+    .verdict-text { color: var(--muted); line-height: 1.7; }
+    .verdict-text strong { color: var(--text); }
+    .score-bar-row { margin-top: 16px; }
+    .score-bar-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+    @media(max-width:768px) { .vs-body{grid-template-columns:1fr;} .vs-divider{writing-mode:horizontal-tb;padding:12px;border-right:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border);} .vs-side.left{border-right:none;border-bottom:1px solid var(--border);} .page-header,.content{padding:30px 20px;} }
+  </style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">📊 DataPath<span>SRMU</span></a>
+    <div class="nav-links">
+      <a href="portfolio.html">Portfolio</a>
+      <a href="interview.html">Interview</a>
+      <a href="toolbox.html" class="active">Toolbox</a>
+      <a href="dashboard.html" class="nav-highlight">📈 Dashboard</a>
+    </div>
+  </div>
+</nav>
+<div class="page-wrap">
+  <div class="page-header">
+    <div style="font-size:36px;font-weight:800;color:var(--text)">⚔️ Toolbox Showdowns</div>
+    <div style="color:var(--muted);font-size:14px;margin-top:8px">Honest, student-focused comparisons for your actual college projects and job applications.</div>
+  </div>
+
+  <div class="content">
+
+    <!-- Python vs R -->
+    <div class="vs-card reveal">
+      <div class="vs-header">
+        <div>
+          <div class="vs-title">🐍 Python vs 📊 R</div>
+          <div class="vs-context">For student data science projects and first jobs</div>
+        </div>
+        <span class="tag tag-blue">Most Asked Showdown</span>
+      </div>
+      <div class="vs-body">
+        <div class="vs-side">
+          <div class="vs-tool-name" style="color:#3b82f6">🐍 Python</div>
+          <div class="score-bar-row">
+            <div class="score-bar-label"><span>Job Market Demand</span><span>95%</span></div>
+            <div class="progress-wrap"><div class="progress-bar blue" style="width:95%"></div></div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label"><span>ML & Deep Learning</span><span>98%</span></div>
+            <div class="progress-wrap"><div class="progress-bar blue" style="width:98%"></div></div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label"><span>Ease for Beginners</span><span>80%</span></div>
+            <div class="progress-wrap"><div class="progress-bar blue" style="width:80%"></div></div>
+          </div>
+          <ul class="vs-pros">
+            <li>Dominant in industry ML/AI jobs</li>
+            <li>Huge ecosystem: Pandas, NumPy, Sklearn, TF</li>
+            <li>Backend & web scraping capabilities</li>
+            <li>Better for production deployment</li>
+          </ul>
+          <ul class="vs-cons">
+            <li>Statistical packages less mature than R</li>
+            <li>Data visualization requires more code</li>
+          </ul>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="vs-side">
+          <div class="vs-tool-name" style="color:#8b5cf6">📊 R</div>
+          <div class="score-bar-row">
+            <div class="score-bar-label"><span>Statistical Analysis</span><span>98%</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:98%;background:var(--accent2)"></div></div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label"><span>Publication Plots</span><span>92%</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:92%;background:var(--accent2)"></div></div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label"><span>Biostatistics/Research</span><span>90%</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:90%;background:var(--accent2)"></div></div>
+          </div>
+          <ul class="vs-pros">
+            <li>Superior statistical testing built-in</li>
+            <li>ggplot2 makes stunning visualizations</li>
+            <li>Preferred in academia, pharma, research</li>
+            <li>R Markdown for reproducible reports</li>
+          </ul>
+          <ul class="vs-cons">
+            <li>Limited job demand vs Python</li>
+            <li>Slower for large-scale ML pipelines</li>
+          </ul>
+        </div>
+      </div>
+      <div class="vs-verdict">
+        <div class="verdict-title">🏆 Student Verdict</div>
+        <div class="verdict-text"><strong>Learn Python first. Always.</strong> For SRMU students targeting data analyst, data scientist, or ML engineer roles, Python is the clear choice. R is a bonus skill — add it in your 3rd/4th year if you're interested in research or bioinformatics. When interviewers ask "Python or R?" — say Python, and mention you've explored R for statistical work.</div>
+      </div>
+    </div>
+
+    <!-- Tableau vs Power BI -->
+    <div class="vs-card reveal">
+      <div class="vs-header">
+        <div>
+          <div class="vs-title">📊 Tableau vs 📈 Power BI</div>
+          <div class="vs-context">For data visualization and BI dashboard projects</div>
+        </div>
+        <span class="tag tag-yellow">High Industry Relevance</span>
+      </div>
+      <div class="vs-body">
+        <div class="vs-side">
+          <div class="vs-tool-name" style="color:#e07b39">📊 Tableau</div>
+          <div class="score-bar-row">
+            <div class="score-bar-label"><span>Visual Quality</span><span>95%</span></div>
+            <div class="progress-wrap"><div class="progress-bar yellow" style="width:95%"></div></div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label"><span>Free for Students</span><span>90%</span></div>
+            <div class="progress-wrap"><div class="progress-bar yellow" style="width:90%"></div></div>
+          </div>
+          <ul class="vs-pros">
+            <li>Free Tableau Public for portfolio work</li>
+            <li>Drag-and-drop, beginner-friendly</li>
+            <li>Beautiful, award-winning visualizations</li>
+            <li>Strong in US/global tech companies</li>
+          </ul>
+          <ul class="vs-cons">
+            <li>Expensive commercial license</li>
+            <li>Limited ETL capabilities</li>
+          </ul>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="vs-side">
+          <div class="vs-tool-name" style="color:#fbbf24">📈 Power BI</div>
+          <div class="score-bar-row">
+            <div class="score-bar-label"><span>Indian Job Market</span><span>92%</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:92%;background:var(--yellow)"></div></div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label"><span>Microsoft Integration</span><span>98%</span></div>
+            <div class="progress-wrap"><div class="progress-bar" style="width:98%;background:var(--yellow)"></div></div>
+          </div>
+          <ul class="vs-pros">
+            <li>Dominant in Indian enterprises</li>
+            <li>Free desktop version</li>
+            <li>DAX language is powerful for calculations</li>
+            <li>Excel → Power BI transition is smooth</li>
+          </ul>
+          <ul class="vs-cons">
+            <li>Windows only for development</li>
+            <li>Less elegant default styling</li>
+          </ul>
+        </div>
+      </div>
+      <div class="vs-verdict">
+        <div class="verdict-title">🏆 Student Verdict for SRMU / Indian Job Market</div>
+        <div class="verdict-text"><strong>Learn Power BI for Indian job placements; learn Tableau for global/product companies and a killer portfolio.</strong> Most Indian IT companies (TCS, Infosys, Wipro, Cognizant) use Power BI heavily. But Tableau looks better on a public portfolio. Ideal: Learn Tableau basics + get Power BI certified (free Microsoft learning path).</div>
+      </div>
+    </div>
+
+    <!-- SQL vs NoSQL -->
+    <div class="vs-card reveal">
+      <div class="vs-header">
+        <div>
+          <div class="vs-title">🗃 SQL vs 🍃 NoSQL (MongoDB)</div>
+          <div class="vs-context">Database choice for data science projects</div>
+        </div>
+        <span class="tag tag-green">Core Knowledge</span>
+      </div>
+      <div class="vs-body">
+        <div class="vs-side">
+          <div class="vs-tool-name" style="color:#38bdf8">🗃 SQL</div>
+          <ul class="vs-pros">
+            <li>Standard for analytics, reporting, BI</li>
+            <li>Every data science interview expects SQL</li>
+            <li>ACID compliance = data reliability</li>
+            <li>Great for structured, relational data</li>
+          </ul>
+          <ul class="vs-cons">
+            <li>Less flexible schema changes</li>
+            <li>Can struggle with massive unstructured data</li>
+          </ul>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="vs-side">
+          <div class="vs-tool-name" style="color:#34d399">🍃 MongoDB</div>
+          <ul class="vs-pros">
+            <li>Flexible JSON-like documents</li>
+            <li>Great for unstructured / semi-structured data</li>
+            <li>Scales horizontally easily</li>
+            <li>Used in real-time web apps</li>
+          </ul>
+          <ul class="vs-cons">
+            <li>Not ideal for complex JOINs/analytics</li>
+            <li>Less commonly tested in DS interviews</li>
+          </ul>
+        </div>
+      </div>
+      <div class="vs-verdict">
+        <div class="verdict-title">🏆 Student Verdict</div>
+        <div class="verdict-text"><strong>Master SQL first — it's tested in almost every data science interview.</strong> NoSQL is a secondary skill. Know it exists, understand when to use it, but invest 80% of your database learning time in SQL: JOINs, aggregations, window functions, subqueries. Use SQLite for your portfolio projects — it's free and zero setup.</div>
+      </div>
+    </div>
+
+    <!-- Jupyter vs VS Code -->
+    <div class="vs-card reveal">
+      <div class="vs-header">
+        <div>
+          <div class="vs-title">📓 Jupyter Notebook vs 💻 VS Code</div>
+          <div class="vs-context">Your daily data science development environment</div>
+        </div>
+        <span class="tag tag-purple">Daily Tool Decision</span>
+      </div>
+      <div class="vs-body">
+        <div class="vs-side">
+          <div class="vs-tool-name" style="color:#f97316">📓 Jupyter</div>
+          <ul class="vs-pros">
+            <li>Perfect for exploration and EDA</li>
+            <li>Inline visualizations and markdown</li>
+            <li>Industry standard for data analysis work</li>
+            <li>Kaggle, Google Colab use it</li>
+          </ul>
+          <ul class="vs-cons">
+            <li>Poor for version control (git)</li>
+            <li>Not ideal for production code</li>
+          </ul>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="vs-side">
+          <div class="vs-tool-name" style="color:#3b82f6">💻 VS Code</div>
+          <ul class="vs-pros">
+            <li>Full IDE with debugging</li>
+            <li>Best for building scripts and pipelines</li>
+            <li>Git integration built-in</li>
+            <li>Jupyter notebooks work inside VS Code too</li>
+          </ul>
+          <ul class="vs-cons">
+            <li>Steeper setup for pure notebook work</li>
+          </ul>
+        </div>
+      </div>
+      <div class="vs-verdict">
+        <div class="verdict-title">🏆 Student Verdict</div>
+        <div class="verdict-text"><strong>Use VS Code with the Jupyter extension.</strong> You get the best of both worlds. Use notebooks for exploration and EDA, switch to .py scripts when building reusable functions or pipelines. This also shows employers you know professional software development practices, not just notebook analysis.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

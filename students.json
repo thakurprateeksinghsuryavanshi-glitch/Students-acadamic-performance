@@ -1,0 +1,37 @@
+{
+  "students": [
+    {
+      "id": "202410101360001",
+      "name": "Demo Student",
+      "roll": "202410101360001",
+      "branch": "BCA",
+      "semester": 3,
+      "section": "A",
+      "marks": {
+        "DIT1": 18,
+        "MidTerm": 22,
+        "DIT2": 17,
+        "InnovativeDIT": 9,
+        "TA1": 8,
+        "TA2": 9,
+        "labs": [8, 9, 7, 9, 8, 10, 9, 8, 9, 9, 10]
+      },
+      "subjects": ["Data Science", "Python Programming", "Statistics", "DBMS", "Web Technologies"]
+    }
+  ],
+  "maxMarks": {
+    "DIT1": 20,
+    "MidTerm": 30,
+    "DIT2": 20,
+    "InnovativeDIT": 10,
+    "TA1": 10,
+    "TA2": 10,
+    "lab": 10
+  },
+  "createdBy": {
+    "name": "Prateek Singh",
+    "roll": "202410101360128",
+    "contact": "9044298094",
+    "email": "thakurprateeksinghsuryavanshi@gmail.com"
+  }
+}
